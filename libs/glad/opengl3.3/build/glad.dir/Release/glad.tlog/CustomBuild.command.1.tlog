@@ -1,0 +1,10 @@
+^C:\USERS\ATGMA\DESKTOP\2022OTONO\PARA_PRACTICA\HELLO_CPP_LIBS\LIBS\GLAD\OPENGL3.3\SOURCE\GLAD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/atgma/Desktop/2022Otono/para_practica/hello_cpp_libs/libs/glad/opengl3.3/source/glad -BC:/Users/atgma/Desktop/2022Otono/para_practica/hello_cpp_libs/libs/glad/opengl3.3/build --check-stamp-file C:/Users/atgma/Desktop/2022Otono/para_practica/hello_cpp_libs/libs/glad/opengl3.3/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
