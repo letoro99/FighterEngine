@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include "../../engine/source/shaders.h"
+#include "../../engine/source/models.h"
 #include <iostream>
 
 // Constant that help us
@@ -61,45 +62,9 @@ int main()
         return -1;
     }
 
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // FragmentShader -> focus on the color for each pixel of a draw
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    //ShaderProgram -> Links vertexShader and fragmentShader
-    unsigned int ID = glCreateProgram(); // se identifica el id del shader con la variable de la clase
-    glAttachShader(ID, vertexShader);
-    glAttachShader(ID, fragmentShader);
-    glLinkProgram(ID);
-    glGetProgramiv(ID, GL_LINK_STATUS, &success);
-    if (!success) { 
-        glGetProgramInfoLog(ID, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader); 
-
-    glUseProgram(ID);
+    ShaderProgram shaderProgram(vertexShaderSource, fragmentShaderSource);
+    
+    shaderProgram.useProgram();
 
     // obejct
     float vertices[] = {
@@ -140,7 +105,44 @@ int main()
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0); 
+    glBindVertexArray(0);
+
+    GLfloat vertices_sqare[] = {
+         0.1f,  0.1f, 0.0f,  // top right
+         0.1f, -0.1f, 0.0f,  // bottom right
+        -0.1f, -0.1f, 0.0f,  // bottom left
+        -0.1f,  0.1f, 0.0f,   // top left 
+    };
+
+    GLint indices_sqare[] = {  // note that we start from 0!
+        0, 1, 3,  // first Triangle
+        1, 2, 3,  // second Triangle
+    };
+    unsigned int nindice_sqare = 6;
+    unsigned int VAO1, VBO1, EBO1;
+    glGenVertexArrays(1, &VAO1);
+    glGenBuffers(1, &VBO1);
+    glGenBuffers(1, &EBO1);
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    
+    glUniform3f(glGetUniformLocation((shaderProgram.getID()), "FragColor"), 0.0f, 0.0f, 1.0f);
+    glBindVertexArray(VAO1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_sqare), vertices_sqare, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO1);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_sqare), indices_sqare, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+
+    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+    glBindVertexArray(0);
 
     // LOOP RENDERING, PRINCIPAL LOOP
     while(!glfwWindowShouldClose(window))
@@ -153,10 +155,14 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw health bar 1
-        glUseProgram(ID);
+        shaderProgram.useProgram();
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0); // no need to unbind it every time 
+        glBindVertexArray(0); // no need to unbind it every time
+
+        glBindVertexArray(VAO1); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        glDrawElements(GL_TRIANGLES, nindice_sqare, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0); // no need to unbind it every time
 
         // check and call events and swap the buffers
         glfwSwapBuffers(window);

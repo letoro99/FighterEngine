@@ -46,3 +46,8 @@ ShaderProgram::ShaderProgram(const char* vertexShaderSource, const char* fragmen
 void ShaderProgram::useProgram() const{
     glUseProgram(ID);
 }
+
+unsigned int ShaderProgram::getID() const
+{
+    return ID;
+}

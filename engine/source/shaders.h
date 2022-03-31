@@ -12,4 +12,7 @@ class ShaderProgram
         ShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
 
         void useProgram() const;
+
+        unsigned int getID() const;
+
 };

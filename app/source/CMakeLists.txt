@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.4)
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
 
-project(engine1 C CXX)
+project(demo C CXX)
 
-file(GLOB SOURCES "../../engine/source/*.cpp" "../../engine/source/*.h")
-
-add_library(engine_lib STATIC ${SOURCES})
+add_library(engine_lib STATIC 
+    "../../engine/source/shaders.cpp"
+    "../../engine/source/shaders.h"
+    "../../engine/source/models.cpp"
+    "../../engine/source/models.h"
+)
 
 # Getting the parent directory twice
 cmake_path(GET CMAKE_SOURCE_DIR PARENT_PATH EXAMPLE_DIR)
@@ -32,4 +35,5 @@ target_include_directories(ventana_engine PRIVATE
 target_link_libraries(ventana_engine PRIVATE
     "${REPO_DIR}/libs/glad/opengl3.3/build/Release/glad.lib"
     "${REPO_DIR}/libs/glfw/build/src/Release/glfw3.lib"
+    engine_lib
 )
