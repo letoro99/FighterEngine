@@ -7,6 +7,7 @@ find_package(OpenGL REQUIRED)
 set(THIRD_PARTY_INCLUDE_DIRECTORIES 
     "${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/opengl3.3/source/glad/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/libs/glfw/source/glfw/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs/glm/source/glm"
 )
 
 set(FG_ENGINE_INCLUDE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/engine")

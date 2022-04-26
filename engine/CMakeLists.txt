@@ -1,11 +1,13 @@
 set(FG_HEADERS
     source/models.h
     source/shaders.h
+    source/Inputs/inputs.h
 )
 
 set(FG_SOURCES
     source/models.cpp
     source/shaders.cpp
+    source/Inputs/inputs.cpp
 )
 
 add_library(FG_Engine STATIC ${FG_SOURCES} ${FG_HEADERS} FG_Engine.hpp)

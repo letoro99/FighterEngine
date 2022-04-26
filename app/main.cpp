@@ -3,23 +3,40 @@
 #include <source/shaders.h>
 #include <source/models.h>
 #include <iostream>
+#include <source/Inputs/inputs.h>
 
 // Constant that help us
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
 
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-    "}\n\0";
+const std::string vertexShaderCode = R"(
+        #version 130                                                       
+                                                                           
+        uniform mat4 projection;                                           
+        uniform mat4 view;                                                 
+        uniform mat4 model;                                                
+        in vec3 position;                                                  
+        in vec3 color;                                                     
+        out vec3 newColor;                                                 
+                                                                           
+        void main()                                                        
+        {                                                                  
+            gl_Position = projection * view * model * vec4(position, 1.0f);
+            newColor = color;                                              
+        }
+    )";
+
+const std::string fragmentShaderCode = R"(
+        #version 130                        
+                                            
+        in vec3 newColor;                   
+        out vec4 outColor;                  
+                                            
+        void main()                         
+        {                                   
+            outColor = vec4(newColor, 1.0f);
+        }
+    )";
 
 // Function that help us
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -62,7 +79,7 @@ int main()
         return -1;
     }
 
-    ShaderProgram shaderProgram(vertexShaderSource, fragmentShaderSource);
+    ShaderProgram shaderProgram(vertexShaderCode.c_str(), fragmentShaderCode.c_str());
     
     shaderProgram.useProgram();
 
@@ -144,6 +161,9 @@ int main()
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
+    Fighters::InputKeyboard keyboard(window);
+    Fighters::InputGamepad joystick(window, GLFW_JOYSTICK_1);
+
     // LOOP RENDERING, PRINCIPAL LOOP
     while(!glfwWindowShouldClose(window))
     {
@@ -165,6 +185,44 @@ int main()
         glBindVertexArray(0); // no need to unbind it every time
 
         // check and call events and swap the buffers
+        Fighters::_Inputs_Keyboard temp_keyboard = keyboard.returnMapInputs();
+        Fighters::_Inputs_Keyboard temp_joystick = joystick.returnMapInputs();
+
+        if(temp_keyboard.upButton) std::cout << "upButton" << std::endl;
+        if(temp_keyboard.downButton) std::cout << "downButton" << std::endl;
+        if(temp_keyboard.leftButton) std::cout << "leftButton" << std::endl;
+        if(temp_keyboard.rightButton) std::cout << "rightButton" << std::endl;
+        if(temp_keyboard.oneButton) std::cout << "1" << std::endl;
+        if(temp_keyboard.twoButton) std::cout << "2" << std::endl;
+        if(temp_keyboard.threeButton) std::cout << "3" << std::endl;
+        if(temp_keyboard.fourButton) std::cout << "4" << std::endl;
+        if(temp_keyboard.menuButton) std::cout << "menu" << std::endl;
+
+        if(temp_joystick.upButton) std::cout << "JupButton" << std::endl;
+        if(temp_joystick.downButton) std::cout << "JdownButton" << std::endl;
+        if(temp_joystick.leftButton) std::cout << "JleftButton" << std::endl;
+        if(temp_joystick.rightButton) std::cout << "JrightButton" << std::endl;
+        if(temp_joystick.oneButton) std::cout << "J1" << std::endl;
+        if(temp_joystick.twoButton) std::cout << "J2" << std::endl;
+        if(temp_joystick.threeButton) std::cout << "J3" << std::endl;
+        if(temp_joystick.fourButton) std::cout << "J4" << std::endl;
+        if(temp_joystick.menuButton) std::cout << "Jmenu" << std::endl;
+
+/*
+        if(joystick.isConnected())
+        {
+        joystick.refreshInputs();
+        if(joystick.isKeyDown_Press()) std::cout << "sj" << std::endl;
+        if(joystick.isKeyUp_Press()) std::cout << "wj" << std::endl;
+        if(joystick.isKeyLeft_Press()) std::cout << "aj" << std::endl;
+        if(joystick.isKeyRight_Press()) std::cout << "dj" << std::endl;
+        if(joystick.isKeyAction1_Press()) std::cout << "1j" << std::endl;
+        if(joystick.isKeyAction2_Press()) std::cout << "2j" << std::endl;
+        if(joystick.isKeyAction3_Press()) std::cout << "3j" << std::endl;
+        if(joystick.isKeyAction4_Press()) std::cout << "4j" << std::endl;
+        if(joystick.isKeyPause_Press()) std::cout << "escj" << std::endl; 
+        }
+*/
         glfwSwapBuffers(window);
         glfwPollEvents();    
     }

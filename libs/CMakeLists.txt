@@ -14,3 +14,4 @@ endfunction()
 
 add_subdirectory_with_folder("libs" ${CMAKE_CURRENT_SOURCE_DIR}/glad/opengl3.3/source/glad)
 add_subdirectory_with_folder("libs" ${CMAKE_CURRENT_SOURCE_DIR}/glfw/source/glfw)
+add_subdirectory_with_folder("libs" ${CMAKE_CURRENT_SOURCE_DIR}/glm/source/glm)
